@@ -9,5 +9,9 @@ module Globalize
         ::ActiveRecord::Base.send(:extend, Globalize::ActiveRecord::ActMacro)
       end
     end
+    
+    rake_tasks do
+      load "tasks/globalize.rake"
+    end
   end
 end

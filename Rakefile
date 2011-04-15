@@ -30,8 +30,9 @@ begin
     gemspec.summary = "Rails I18n: de-facto standard library for ActiveRecord 3 model/data translation"
     gemspec.description = "Rails I18n: de-facto standard library for ActiveRecord 3 model/data translation"
     gemspec.email = 'nobody@globalize-rails.org'
-    gemspec.homepage = "http://github.com/svenfuchs/globlize3"
-    gemspec.authors = ['Sven Fuchs', 'Joshua Harvey', 'Clemens Kofler', 'John-Paul Bader', 'Igor Galeta']
+    gemspec.homepage = "http://github.com/superp/globlize3"
+    gemspec.authors = ['Sven Fuchs', 'Joshua Harvey', 'Clemens Kofler', 'John-Paul Bader', 'Igor Galeta', 
+    'Pavel Galeta']
     gemspec.files = FileList["[A-Z]*", "{lib}/**/*", "{test}/**/*"]
     gemspec.rubyforge_project = "[none]"
     

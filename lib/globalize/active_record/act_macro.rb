@@ -4,11 +4,14 @@ module Globalize
       def translates(*attr_names)
         return if translates?
 
-        options = attr_names.extract_options!
+        options = {}
         options[:table_name] ||= "#{table_name.singularize}_translations"
+        
+        names = attr_names.extract_options!
 
-        class_inheritable_accessor :translated_attribute_names, :translation_options
-        self.translated_attribute_names = attr_names.map(&:to_sym)
+        class_inheritable_accessor :translated_attribute_names, :translated_attribute_hash, :translation_options
+        self.translated_attribute_names = names.keys.map(&:to_sym)
+        self.translated_attribute_hash  = names
         self.translation_options        = options
 
         include InstanceMethods, Accessors
@@ -21,7 +24,7 @@ module Globalize
 
         after_save :save_translations!
 
-        attr_names.each { |attr_name| translated_attr_accessor(attr_name) }
+        names.keys.each { |attr_name| translated_attr_accessor(attr_name) }
       end
 
       def class_name

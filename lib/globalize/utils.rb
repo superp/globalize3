@@ -46,21 +46,33 @@ module Globalize
         end
       end
       
+      # create or delete parent model fields, such as is_locale_{locale}
+      def make_parent_checkers(klass, connect)
+        columns = connect.columns(klass.table_name)
+        
+        Globalize.available_locales.each do |locale|
+          name = "is_locale_#{locale}"
+          connect.add_column klass.table_name, name, :boolean, :default => false unless columns.map(&:name).include?(name)
+        end
+      end
+      
       def make_up(klass)    
         conn = klass.connection
         table_name = klass.translations_table_name
+        
+        make_parent_checkers(klass, conn)
             
         if conn.table_exists?(table_name) # translated table exits
           columns = conn.columns(table_name)
           
-          klass.translated_attribute_hash.each do |field|
+          klass.translated_attribute_hash.each do |key, value|
             columns.each do |column|
-              if column.name.to_sym == field[0] && column.type != field[1]
-                klass.connection.change_column table_name, field[0], field[1]
+              if column.name.to_sym == key && column.type != value
+                klass.connection.change_column table_name, key, value
               end
             end
             
-            conn.add_column table_name, field[0], field[1] unless columns.map(&:name).include?(field[0].to_s)
+            conn.add_column table_name, key, value unless columns.map(&:name).include?(key.to_s)
           end
           
           columns.each do |column|

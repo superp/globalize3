@@ -28,9 +28,22 @@ module Globalize
         stash.each do |locale, attrs|
           translation = record.translations.find_or_initialize_by_locale(locale.to_s)
           attrs.each { |name, value| translation[name] = value }
-          translation.save!
+          
+
+          if attrs.values.any? {|v| !v.blank? }
+            translation.save!
+          else
+            translation.destroy unless translation.new_record?
+          end 
         end
+        
         stash.clear
+      end
+      
+      def update_checkers!
+        stash.each do |locale, attrs|
+          record["is_locale_#{locale}"] = attrs.values.any? {|v| !v.blank? }
+        end
       end
 
       def reset

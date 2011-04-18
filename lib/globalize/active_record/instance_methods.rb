@@ -53,7 +53,7 @@ module Globalize
       
       def translates_attribute?(name, locale = nil)
         locale ||= Globalize.locale
-        self.class.translated?(name) && I18n.default_locale.to_s != locale.to_s
+        self.class.translated?(name) #&& I18n.default_locale.to_s != locale.to_s
       end
 
       def translated_attributes
@@ -80,6 +80,10 @@ module Globalize
 
         def save_translations!
           globalize.save_translations!
+        end
+        
+        def update_checkers!
+          globalize.update_checkers!
         end
 
         def with_given_locale(attributes, &block)

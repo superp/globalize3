@@ -23,6 +23,7 @@ module Globalize
                                 :extend      => HasManyExtensions
 
         after_save :save_translations!
+        before_save :update_checkers!
 
         names.keys.each { |attr_name| translated_attr_accessor(attr_name) }
       end

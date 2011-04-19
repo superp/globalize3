@@ -24,6 +24,8 @@ module Globalize
 
         after_save :save_translations!
         before_save :update_checkers!
+        
+        scope :with_locale, lambda {|locale| where(["is_locale_#{locale} = 1"])}
 
         names.keys.each { |attr_name| translated_attr_accessor(attr_name) }
       end

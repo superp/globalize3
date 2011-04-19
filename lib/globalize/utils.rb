@@ -9,6 +9,16 @@ module Globalize
       def model_dir=(dir)
         @model_dir = dir
       end
+      
+      def show_log(action, table_name, name=false, type=false)
+        log = []
+        log << action
+        log << ' ' + table_name
+        log << '.' + name if name
+        log << ' as ' + type if type
+        
+        puts log.join 
+      end
     
       # Return a list of the model files to translate. If we have
       # command line arguments, they're assumed to be either
@@ -52,7 +62,11 @@ module Globalize
         
         Globalize.available_locales.each do |locale|
           name = "is_locale_#{locale}"
-          connect.add_column klass.table_name, name, :boolean, :default => false unless columns.map(&:name).include?(name)
+          
+          unless columns.map(&:name).include?(name)
+            connect.add_column klass.table_name, name, :boolean, :default => false
+            show_log("add column", klass.table_name, name, :boolean)
+          end
         end
       end
       
@@ -68,23 +82,34 @@ module Globalize
           klass.translated_attribute_hash.each do |key, value|
             columns.each do |column|
               if column.name.to_sym == key && column.type != value
-                klass.connection.change_column table_name, key, value
+                conn.change_column table_name, key, value
+                show_log("change column", table_name, key, value)
               end
             end
             
-            conn.add_column table_name, key, value unless columns.map(&:name).include?(key.to_s)
+            unless columns.map(&:name).include?(key.to_s)
+              conn.add_column table_name, key, value 
+              show_log("add column", table_name, key, value)
+            end
           end
           
           columns.each do |column|
-            conn.remove_column table_name, column.name if !klass.translated_attribute_names.include?(column.name.to_sym) && [:string, :text].include?(column.type) && column.name != "locale"
+            if !klass.translated_attribute_names.include?(column.name.to_sym) && [:string, :text].include?(column.type) && column.name != "locale"
+              conn.remove_column table_name, column.name 
+              show_log("remove column", table_name, column.name)
+            end
           end
         else
           klass.create_translation_table!(klass.translated_attribute_hash)
+          show_log("create table", table_name)
         end
       end
       
       def make_down(klass)
-        klass.drop_translation_table! if klass.connection.table_exists?(klass.translations_table_name)
+        if klass.connection.table_exists?(klass.translations_table_name)
+          klass.drop_translation_table! 
+          show_log("drop table", klass.translations_table_name)
+        end
       end
 
       def init(kind)

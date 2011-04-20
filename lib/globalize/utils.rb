@@ -13,9 +13,9 @@ module Globalize
       def show_log(action, table_name, name=false, type=false)
         log = []
         log << action
-        log << ' ' + table_name
-        log << '.' + name if name
-        log << ' as ' + type if type
+        log << ' ' + table_name.to_s
+        log << '.' + name._to_s if name
+        log << ' as ' + type.to_s if type
         
         puts log.join 
       end

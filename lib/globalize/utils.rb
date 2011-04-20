@@ -14,7 +14,7 @@ module Globalize
         log = []
         log << action
         log << ' ' + table_name.to_s
-        log << '.' + name._to_s if name
+        log << '.' + name.to_s if name
         log << ' as ' + type.to_s if type
         
         puts log.join 
